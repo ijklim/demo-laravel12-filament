@@ -2,14 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CourtBookingResource\Pages\ListCourtBookings;
+use App\Filament\Resources\CourtBookingResource\Pages\CreateCourtBooking;
+use App\Filament\Resources\CourtBookingResource\Pages\EditCourtBooking;
 use App\Filament\Resources\CourtBookingResource\Pages;
 use App\Models\CourtBooking;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Model;
 use Closure;
 
@@ -17,22 +26,22 @@ class CourtBookingResource extends Resource
 {
     protected static ?string $model = CourtBooking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('court_id')
+        return $schema
+            ->components([
+                Select::make('court_id')
                     ->relationship('court', 'name')
                     ->required(),
-                Forms\Components\Select::make('member_id')
+                Select::make('member_id')
                     ->relationship('member', 'name')
                     ->required()
                     ->searchable(),
-                Forms\Components\DateTimePicker::make('start_time')
+                DateTimePicker::make('start_time')
                     ->required(),
-                Forms\Components\DateTimePicker::make('end_time')
+                DateTimePicker::make('end_time')
                     ->required()
                     ->after('start_time')
                     ->rule(function (Get $get, ?Model $record) {
@@ -49,7 +58,7 @@ class CourtBookingResource extends Resource
                                     $q->where('start_time', '<', $end)
                                       ->where('end_time', '>', $start);
                                 });
-                            
+
                             if ($record) {
                                 $query->where('id', '!=', $record->id);
                             }
@@ -66,27 +75,27 @@ class CourtBookingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('court.name')
+                TextColumn::make('court.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('member.name')
+                TextColumn::make('member.name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('start_time')
+                TextColumn::make('start_time')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_time')
+                TextColumn::make('end_time')
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -101,9 +110,9 @@ class CourtBookingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCourtBookings::route('/'),
-            'create' => Pages\CreateCourtBooking::route('/create'),
-            'edit' => Pages\EditCourtBooking::route('/{record}/edit'),
+            'index' => ListCourtBookings::route('/'),
+            'create' => CreateCourtBooking::route('/create'),
+            'edit' => EditCourtBooking::route('/{record}/edit'),
         ];
     }
 }

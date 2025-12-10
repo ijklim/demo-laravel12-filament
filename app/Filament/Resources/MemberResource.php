@@ -2,10 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\MemberResource\Pages\ListMembers;
+use App\Filament\Resources\MemberResource\Pages\CreateMember;
+use App\Filament\Resources\MemberResource\Pages\EditMember;
 use App\Filament\Resources\MemberResource\Pages;
 use App\Models\Member;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -15,29 +27,29 @@ class MemberResource extends Resource
 {
     protected static ?string $model = Member::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TagsInput::make('interests')
+                TagsInput::make('interests')
                     ->suggestions([
                         'Line Dancing',
                         'Pickleball',
-                        'Vegetarian Potluck', 
+                        'Vegetarian Potluck',
                         'Gardening',
                         'Yoga',
                     ])
                     ->columnSpanFull(),
-                Forms\Components\Toggle::make('active')
+                Toggle::make('active')
                     ->required(),
             ]);
     }
@@ -46,22 +58,22 @@ class MemberResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('interests')
+                TextColumn::make('interests')
                     ->badge()
                     ->separator(','),
-                Tables\Columns\IconColumn::make('active')
+                IconColumn::make('active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('interests')
+                SelectFilter::make('interests')
                     ->options([
                         'Line Dancing' => 'Line Dancing',
                         'Pickleball' => 'Pickleball',
@@ -76,12 +88,12 @@ class MemberResource extends Resource
                         return $query;
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -96,9 +108,9 @@ class MemberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMembers::route('/'),
-            'create' => Pages\CreateMember::route('/create'),
-            'edit' => Pages\EditMember::route('/{record}/edit'),
+            'index' => ListMembers::route('/'),
+            'create' => CreateMember::route('/create'),
+            'edit' => EditMember::route('/{record}/edit'),
         ];
     }
 }

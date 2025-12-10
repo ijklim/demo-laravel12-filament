@@ -2,10 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\ClassSessionResource\Pages\ListClassSessions;
+use App\Filament\Resources\ClassSessionResource\Pages\CreateClassSession;
+use App\Filament\Resources\ClassSessionResource\Pages\EditClassSession;
 use App\Filament\Resources\ClassSessionResource\Pages;
 use App\Models\ClassSession;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,18 +23,18 @@ class ClassSessionResource extends Resource
 {
     protected static ?string $model = ClassSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-academic-cap';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('title')
+        return $schema
+            ->components([
+                TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('start_time')
+                DateTimePicker::make('start_time')
                     ->required(),
-                Forms\Components\DateTimePicker::make('end_time')
+                DateTimePicker::make('end_time')
                     ->required()
                     ->after('start_time'),
             ]);
@@ -35,15 +44,15 @@ class ClassSessionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('start_time')
+                TextColumn::make('start_time')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_time')
+                TextColumn::make('end_time')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -51,12 +60,12 @@ class ClassSessionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -71,9 +80,9 @@ class ClassSessionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListClassSessions::route('/'),
-            'create' => Pages\CreateClassSession::route('/create'),
-            'edit' => Pages\EditClassSession::route('/{record}/edit'),
+            'index' => ListClassSessions::route('/'),
+            'create' => CreateClassSession::route('/create'),
+            'edit' => EditClassSession::route('/{record}/edit'),
         ];
     }
 }

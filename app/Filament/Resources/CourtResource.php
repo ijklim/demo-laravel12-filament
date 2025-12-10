@@ -2,10 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CourtResource\Pages\ListCourts;
+use App\Filament\Resources\CourtResource\Pages\CreateCourt;
+use App\Filament\Resources\CourtResource\Pages\EditCourt;
 use App\Filament\Resources\CourtResource\Pages;
 use App\Models\Court;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,13 +22,13 @@ class CourtResource extends Resource
 {
     protected static ?string $model = Court::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -30,9 +38,9 @@ class CourtResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -40,12 +48,12 @@ class CourtResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -60,9 +68,9 @@ class CourtResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCourts::route('/'),
-            'create' => Pages\CreateCourt::route('/create'),
-            'edit' => Pages\EditCourt::route('/{record}/edit'),
+            'index' => ListCourts::route('/'),
+            'create' => CreateCourt::route('/create'),
+            'edit' => EditCourt::route('/{record}/edit'),
         ];
     }
 }

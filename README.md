@@ -20,7 +20,7 @@ Manage community activities focusing on:
 ## Tech Stack
 
 * **Framework**: Laravel 12
-* **Admin Panel**: FilamentPHP v3
+* **Admin Panel**: FilamentPHP v4
 * **Frontend**: Tailwind CSS, Alpine.js, Livewire (TALL Stack)
 
 ## Getting Started

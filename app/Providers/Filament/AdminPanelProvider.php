@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->plugin(
                 // Register the Filament FullCalendar plugin to add calendar functionality.
-                \Saade\FilamentFullCalendar\FilamentFullCalendarPlugin::make()
+                FilamentFullCalendarPlugin::make()
             )
             ->colors([
                 'primary' => Color::Amber,
@@ -38,12 +42,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
