@@ -26,7 +26,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName(config('app.name') . ' v' . config('app.version'))
             ->login()
+            ->plugin(
+                // Register the Filament FullCalendar plugin to add calendar functionality.
+                \Saade\FilamentFullCalendar\FilamentFullCalendarPlugin::make()
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
