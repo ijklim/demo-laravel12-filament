@@ -17,8 +17,8 @@ class CalendarWidget extends FullCalendarWidget
                 return [
                     'id'    => 'booking-' . $booking->id,
                     'title' => 'Court: ' . optional($booking->court)->name,
-                    'start' => $booking->start_time,
-                    'end'   => $booking->end_time,
+                    'start' => $booking->start_time->toIso8601String(),
+                    'end'   => $booking->end_time->toIso8601String(),
                     'color' => '#10b981', // emerald-500
                 ];
             });
@@ -30,12 +30,15 @@ class CalendarWidget extends FullCalendarWidget
                 return [
                     'id'    => 'session-' . $session->id,
                     'title' => 'Class: ' . $session->title,
-                    'start' => $session->start_time,
-                    'end'   => $session->end_time,
+                    'start' => $session->start_time->toIso8601String(),
+                    'end'   => $session->end_time->toIso8601String(),
                     'color' => '#f59e0b', // amber-500
                 ];
             });
 
-        return $bookings->merge($sessions)->toArray();
+        return [
+            ...$bookings,
+            ...$sessions,
+        ];
     }
 }
