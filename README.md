@@ -42,6 +42,17 @@ Follow these steps to set up and run the project locally.
     composer install
     ```
 
+    **For Production**:
+    If deploying to production, skip dev dependencies to improve performance and security.
+    ```bash
+    composer install --no-dev --optimize-autoloader
+    ```
+    *Troubleshooting: If you see "Please provide a valid cache path" (In Compiler.php), it means Laravel's storage directories are missing.*
+    ```bash
+    mkdir -p storage/framework/{cache,sessions,views}
+    composer install --no-dev --optimize-autoloader
+    ```
+
 3.  **Install Node dependencies**:
     ```bash
     npm install
@@ -89,6 +100,7 @@ Follow these steps to set up and run the project locally.
 3.  **Access the Admin Panel**:
     Open your browser and navigate to:
     [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+
 
 ## Code Overview
 
