@@ -101,6 +101,24 @@ Follow these steps to set up and run the project locally.
     Open your browser and navigate to:
     [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
 
+## Performance Tips
+
+### Cache Blade Icons
+
+The **Blade Icons** package (used by Filament for Heroicons) can significantly slow down your application if icons are not cached. Without caching, it scans the filesystem for SVG files on every request.
+
+**Always cache icons in production:**
+```bash
+php artisan icons:cache
+```
+
+To clear the cache (e.g., after adding new icons):
+```bash
+php artisan icons:clear
+```
+
+> **Tip**: Add `php artisan icons:cache` to your deployment script alongside other optimization commands like `config:cache`, `route:cache`, and `view:cache`.
+
 
 ## Code Overview
 
