@@ -16,7 +16,7 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     // Important: Do NOT use environment variable for `version`
-    'version' => '1.0.5',
+    'version' => '1.0.6',
 
     /*
     |--------------------------------------------------------------------------

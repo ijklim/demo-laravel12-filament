@@ -120,6 +120,69 @@ php artisan icons:clear
 > **Tip**: Add `php artisan icons:cache` to your deployment script alongside other optimization commands like `config:cache`, `route:cache`, and `view:cache`.
 
 
+### Enable OPcache
+
+Enable PHP OPcache to improve performance by caching compiled PHP bytecode so scripts don't need to be recompiled on every request.
+
+- Add or update these settings in your `php.ini` (example):
+```
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=0
+opcache.validate_timestamps=1
+```
+
+- Notes:
+    - For production, set `opcache.validate_timestamps=0` (and `revalidate_freq=0`) and restart PHP on deploy so the cache isn't revalidated on every request.
+    - `opcache.enable_cli=1` lets CLI commands (like `artisan`) use OPcache during local testing.
+
+- Restart your PHP service after editing `php.ini` (e.g., restart PHP-FPM or your webserver).
+
+- Quick checks:
+```
+php --ini     # find active php.ini
+php -i | grep -i opcache
+php -r "echo ini_get('opcache.enable') ? 'OPcache enabled' : 'OPcache disabled';"
+```
+
+> Tip: Include OPcache-related php.ini edits in your deployment/infra provisioning steps alongside `php artisan optimize`.
+
+### Dev vs Production examples
+
+If you prefer no surprises during development and don't want to manage the cache manually, use a development-friendly configuration that still benefits from OPcache while allowing code edits to be picked up automatically.
+
+- Development (recommended for local dev when you want automatic updates):
+```
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=10000
+opcache.validate_timestamps=1
+opcache.revalidate_freq=1
+```
+Explanation: `validate_timestamps=1` with a small `revalidate_freq` makes OPcache check file timestamps frequently so edits are picked up without manual cache clears. This avoids surprises during development while still giving CLI and worker speedups.
+
+- Production (recommended for servers):
+```
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=256
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0
+opcache.revalidate_freq=0
+```
+Explanation: Disabling timestamp validation (`validate_timestamps=0`) removes runtime file checks and yields maximum performance. Note: you must restart PHP-FPM / your webserver (and any long-running workers) after deployment so new code is loaded.
+
+- Worker & CI notes:
+    - For long-running workers (`php artisan queue:work --daemon`), enable OPcache and restart workers on deploy.
+    - For CI, enabling OPcache can speed up test suites; keeping `validate_timestamps=1` is fine for CI runners.
+
+
 ## Code Overview
 
 ### Models
